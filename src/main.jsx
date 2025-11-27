@@ -1,14 +1,37 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import Projects from '@/components/Projects';
+import Footer from '@/components/Footer';
+import InfinitySection from '@/components/InfinitySection';
+import ActionCard from '@/components/ActionCard';
+import GrowthSection from '@/components/GrowthSection';
+import ClosingSection from '@/components/ClosingSection';
+import './App.css';
+import './i18n/i18n'; // Inisialisasi i18next jika ingin digunakan
 
-import "./i18n/i18n.js";
+// Komponen utama aplikasi Anda
+function App() {
+    return (
+        <div className="bg-dark-bg text-white/90 relative overflow-hidden has-corner-light">
+            <Navbar />
+            <main style={{ zIndex: 2, position: 'relative' }}>
+                <Hero />
+                <InfinitySection />
+                <Projects />
+                <ActionCard />
+                <GrowthSection />
+                <ClosingSection />
+            </main>
+            <Footer />
+        </div>
+    );
+}
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+// Render komponen utama ke dalam elemen #root di HTML
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <React.Suspense fallback="loading...">
-      <App />
-    </React.Suspense>
-  </React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );
