@@ -9,10 +9,24 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: EC2  # <--- THIS TELLS GITHUB TO READ THE ENVIRONMENT SECRETS
+    environment: EC2
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Pre-flight SSH Connection Test
+        run: |
+          echo "Testing connection to EC2 host: ${{ secrets.EC2_HOST }} on port 22..."
+          nc -zv -w 10 ${{ secrets.EC2_HOST }} 22 || {
+            echo "--------------------------------------------------------"
+            echo "ERROR: Could not connect to EC2 on port 22 (Connection Timed Out)."
+            echo "Please check the following:"
+            echo "1. Is your EC2_HOST secret set to your instance's PUBLIC IPv4 address?"
+            echo "2. Has your EC2 public IP changed because the instance was stopped/restarted?"
+            echo "3. Is Port 22 in your EC2 Security Group allowed from 0.0.0.0/0?"
+            echo "--------------------------------------------------------"
+            exit 1
+          }
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
