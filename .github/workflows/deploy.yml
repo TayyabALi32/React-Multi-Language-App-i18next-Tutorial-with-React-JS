@@ -1,0 +1,40 @@
+name: Deploy Docker Container to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Clone the repository if the folder does not exist yet
+            if [ ! -d "React-Multi-Language-App-i18next-Tutorial-with-React-JS" ]; then
+              git clone https://github.com/TayyabALi32/React-Multi-Language-App-i18next-Tutorial-with-React-JS.git
+            fi
+
+            # Enter project directory and pull latest code from pushed branch
+            cd React-Multi-Language-App-i18next-Tutorial-with-React-JS
+            git fetch --all
+            git reset --hard origin/${{ github.ref_name }}
+
+            # Safeguard: handle lowercase 'dockerfile' if present
+            if [ -f "dockerfile" ] && [ ! -f "Dockerfile" ]; then
+              mv dockerfile Dockerfile
+            fi
+
+            # Build and restart the Docker container
+            docker build -t react-multilang-app .
+            docker stop react-app || true
+            docker rm react-app || true
+            docker run -d --name react-app --restart unless-stopped -p 80:80 react-multilang-app
+            docker image prune -f
