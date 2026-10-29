@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with Nginx
+# Stage 2: Serve with Nginx ok
 FROM nginx:alpine
 # Copy the built Vite files into Nginx's default public directory
 COPY --from=build /app/dist /usr/share/nginx/html
